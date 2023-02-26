@@ -1,11 +1,18 @@
-import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+
+const  routes:  Routes  = [
+  {
+      path:  'dashboard',
+      component:  DashboardComponent,
+  }
+];
 
 @NgModule({
   declarations: [
@@ -15,13 +22,22 @@ import { DashboardComponent } from './dashboard/dashboard.component';
   imports: [
     BrowserModule,
     HttpClientModule,
-    RouterModule.forRoot(
-      [
-        { path: "", component: DashboardComponent}
-      ]
-    )
+    AuthModule.forRoot({
+      config: {
+        authority: '<authority address here>',
+        redirectUrl: window.location.origin,
+        postLogoutRedirectUri: window.location.origin,
+        clientId: '<clientId>',
+        scope: 'openid profile email offline_access',
+        responseType: 'code',
+        silentRenew: true,
+        useRefreshToken: true,
+        logLevel: LogLevel.Debug,
+      },
+    }),
+    RouterModule.forChild(routes)
   ],
-  providers: [OidcSecurityService],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
